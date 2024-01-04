@@ -75,3 +75,16 @@ module "api_gateway" {
   vpclink_id                   = var.vpclink_id
   alb_listener_arn             = module.alb.alb_listener_arn
 }
+
+
+module "aurora" {
+  source = "../../modules/aurora"
+
+  cluster_name           = "nonprod-postgressql-aurora"
+  engine_version         = "latest_postgres_version"
+  instance_type          = "db.r5.large"
+  username               = "admin"
+  password               = "admin"
+  vpc_security_group_ids = ["sg-xxxxxxxxxxxxxxxxx"]
+  subnet_ids             = ["subnet-xxxxxxxx", "subnet-yyyyyyyy"]
+}
