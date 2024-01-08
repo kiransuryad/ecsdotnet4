@@ -26,35 +26,50 @@ module "alb" {
   ecs_security_group_id        = var.ecs_security_group_id
   alb_security_group_id        = var.alb_security_group_id
   ci_security_group_id         = var.ci_security_group_id
-  desired_count                = var.desired_count
   existing_execution_role_name = var.existing_execution_role_name
-  ecr_repository_url           = var.ecr_repository_url
-  cpu                          = var.cpu
-  memory                       = var.memory
-  container_definitions        = var.container_definitions
   mandatory_tags               = var.mandatory_tags
   optional_tags                = var.optional_tags
-
 }
 
 
-module "ecs" {
-  source                       = "../../modules/ecs"
-  vpc_id                       = var.vpc_id
-  private_subnet_ids           = var.private_subnet_ids
-  ecs_security_group_id        = var.ecs_security_group_id
-  alb_security_group_id        = var.alb_security_group_id
-  ci_security_group_id         = var.ci_security_group_id
-  desired_count                = var.desired_count
-  existing_execution_role_name = var.existing_execution_role_name
-  ecr_repository_url           = var.ecr_repository_url
-  cpu                          = var.cpu
-  memory                       = var.memory
-  container_definitions        = var.container_definitions
-  mandatory_tags               = var.mandatory_tags
-  optional_tags                = var.optional_tags
-  aws_lb_target_group_arn      = module.alb.aws_lb_target_group_arn
+module "ecs_rs" {
+  source                          = "../../modules/ecs_rs"
+  vpc_id                          = var.vpc_id
+  private_subnet_ids              = var.private_subnet_ids
+  ecs_security_group_id           = var.ecs_security_group_id
+  alb_security_group_id           = var.alb_security_group_id
+  ci_security_group_id            = var.ci_security_group_id
+  desired_count                   = var.rs_desired_count
+  existing_execution_role_name    = var.existing_execution_role_name
+  ecr_repository_url              = var.rs_ecr_repository_url
+  cpu                             = var.rs_cpu
+  memory                          = var.rs_memory
+  container_definitions           = var.rs_container_definitions
+  mandatory_tags                  = var.mandatory_tags
+  optional_tags                   = var.optional_tags
+  alb_listener_arn                = module.alb.alb_listener_arn
+  rater_service_listener_priority = var.rater_service_listener_priority
+  rater_service_container_port    = var.rater_service_container_port
 }
+
+module "ecs_ap" {
+  source                               = "../../modules/ecs_ap"
+  vpc_id                               = var.vpc_id
+  private_subnet_ids                   = var.private_subnet_ids
+  ecs_cluster_id                       = var.ecs_cluster_id
+  appetite_check_security_group_id     = var.ecs_security_group_id
+  appetite_check_desired_count         = var.ap_desired_count
+  existing_execution_role_name         = var.existing_execution_role_name
+  appetite_check_cpu                   = var.ap_cpu
+  appetite_check_memory                = var.ap_memory
+  appetite_check_container_definitions = var.ap_container_definitions
+  mandatory_tags                       = var.mandatory_tags
+  optional_tags                        = var.optional_tags
+  alb_listener_arn                     = module.alb.alb_listener_arn
+  appetite_check_listener_priority     = var.appetite_check_listener_priority
+  appetite_check_container_port        = var.appetite_check_container_port
+}
+
 
 
 module "api_gateway" {
@@ -64,12 +79,7 @@ module "api_gateway" {
   ecs_security_group_id        = var.ecs_security_group_id
   alb_security_group_id        = var.alb_security_group_id
   ci_security_group_id         = var.ci_security_group_id
-  desired_count                = var.desired_count
   existing_execution_role_name = var.existing_execution_role_name
-  ecr_repository_url           = var.ecr_repository_url
-  cpu                          = var.cpu
-  memory                       = var.memory
-  container_definitions        = var.container_definitions
   mandatory_tags               = var.mandatory_tags
   optional_tags                = var.optional_tags
   vpclink_id                   = var.vpclink_id

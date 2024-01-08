@@ -23,26 +23,6 @@ variable "alb_security_group_id" {
   type        = string
 }
 
-variable "ecr_repository_url" {
-  description = "The URL for the ECR repository that contains the Docker image."
-  type        = string
-}
-
-variable "cpu" {
-  description = "The CPU value for the ECS task."
-  type        = string
-}
-
-variable "memory" {
-  description = "The memory value for the ECS task."
-  type        = string
-}
-
-variable "container_definitions" {
-  description = "The container definitions in JSON format."
-  type        = string
-}
-
 variable "mandatory_tags" {
   description = "Mandatory tags for resources."
   type        = map(string)
@@ -58,11 +38,6 @@ variable "optional_tags" {
 variable "existing_execution_role_name" {
   description = "The name of the existing ECS execution role."
   type        = string
-}
-
-variable "desired_count" {
-  description = "The number of instances of the task definition to place and keep running."
-  type        = number
 }
 
 variable "alb_listener_arn" {

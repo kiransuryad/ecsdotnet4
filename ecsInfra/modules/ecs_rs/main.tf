@@ -46,3 +46,43 @@ resource "aws_ecs_service" "ecs_service" {
     var.optional_tags
   )
 }
+
+# Target Group for 'rater-service' microservice
+resource "aws_lb_target_group" "rater_service_tg" {
+  name     = "rater-service-tg"
+  port     = var.rater_service_container_port
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    path                = "/health"
+    interval            = 30
+    matcher             = "200"
+  }
+
+  tags = merge(
+    var.mandatory_tags,
+    var.optional_tags
+  )
+}
+
+# Listener Rule for the Application Load Balancer to route to 'rater-service'
+resource "aws_lb_listener_rule" "rater_service_rule" {
+  listener_arn = var.alb_listener_arn
+  priority     = var.rater_service_listener_priority
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.rater_service_tg.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/ci/rater-service*"]
+    }
+  }
+}
+

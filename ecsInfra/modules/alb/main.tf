@@ -6,21 +6,19 @@ resource "aws_lb" "ecs_alb" {
   security_groups    = [var.alb_security_group_id]
 }
 
-# Create the ALB target group for ECS.
-resource "aws_lb_target_group" "alb_ecs_tg" {
-  port        = 80
-  protocol    = "HTTP"
-  target_type = "ip"
-  vpc_id      = var.vpc_id
-}
-
-# Create the ALB listener with the target group.
+# Create the ALB listener for the ECS services.
 resource "aws_lb_listener" "ecs_alb_listener" {
   load_balancer_arn = aws_lb.ecs_alb.arn
   port              = "80"
   protocol          = "HTTP"
+
+  # Default action - can forward to a fixed response or a default target group
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404 Not Found"
+      status_code  = "404"
+    }
   }
 }

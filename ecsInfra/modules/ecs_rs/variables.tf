@@ -70,3 +70,21 @@ variable "aws_lb_target_group_arn" {
   type        = string
   default     = "arn:aws:elasticloadbalancing:us-east-1:950529178389:targetgroup/tf-20231004181002229300000001/732e5dccab80ac95"
 }
+
+variable "rater_service_container_port" {
+  type        = number
+  description = "Container port for the 'rater-service'"
+  default     = 80
+}
+
+variable "rater_service_listener_priority" {
+  type        = number
+  description = "Priority for the ALB listener rule for 'rater-service'"
+  default     = 101
+}
+
+variable "alb_listener_arn" {
+  type        = string
+  description = "ARN of the ALB listener for routing traffic"
+}
+
